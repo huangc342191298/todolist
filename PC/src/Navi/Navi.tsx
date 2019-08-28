@@ -8,8 +8,7 @@ import {
     Link
 } from 'react-router-dom';
 //引入组件
-import App from '../App';
-import Pagebutton from './Todo';
+import todolist from './Todo';
 import 'antd/dist/antd.css';
 import logo from '../logo.svg';
 import './Navi.css'
@@ -42,13 +41,13 @@ class SiderDemo extends Component<any,any> {
                         <Menu.Item key="1">
                         <Icon type="ordered-list" />
                             <span className="nav-text">To Do List</span>
-                            <Link to="/Pagebutton"> </Link>
+                            <Link to="/todolist"> </Link>
                         </Menu.Item>
-                        <Menu.Item key="2">
+                        {/* <Menu.Item key="2">
                             <Icon type="plus-circle" />
                             <span className="nav-text">添加</span>
                             <Link to="/App"></Link>
-                        </Menu.Item>
+                        </Menu.Item> */}
                         {/* <Menu.Item key="3">
                             <Icon type="upload" />
                             <span className="nav-text">nav 3</span>
@@ -76,9 +75,7 @@ class SiderDemo extends Component<any,any> {
                             <Breadcrumb.Item>huangc</Breadcrumb.Item>
                         </Breadcrumb>
                         <div style={{ padding: 24, background: '#fff', minHeight: 780 }}>
-                        <Route exact path="/Pagebutton" component={Pagebutton} />
-                        <Route path="/App" component={App} />
-
+                          <Route exact path="/todolist" component={todolist} />
                         </div>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>

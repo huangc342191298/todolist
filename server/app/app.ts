@@ -1,11 +1,15 @@
 import express=require('express');
-
+import bodyParser = require('body-parser');
+// 解析application/json数据
+var jsonParser = bodyParser.json();
+// 解析application/x-www-form-urlencoded数据
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 //引入mogoose模块
 const mongoose = require('mongoose');
 //连接mongodb
 var URL = 'mongodb://localhost:27017/runoob';
 
-mongoose.connect(URL,function(err){
+mongoose.connect(URL,function(err: string){
     if(err){
         console.warn('数据库连接失败：'+err);
     }else {
@@ -13,15 +17,15 @@ mongoose.connect(URL,function(err){
     }
 });
 
-var db = mongoose.connection;//获取connection实例
-//使用Connetion监听连接状态
-db.on('connected',function(err){
-    if(err){
-        console.log('连接数据库失败：'+err);
-    }else{
-        console.log('连接数据库成功！');
-    }
-});
+// var db = mongoose.connection;//获取connection实例
+// //使用Connetion监听连接状态
+// db.on('connected',function(err){
+//     if(err){
+//         console.log('连接数据库失败：'+err);
+//     }else{
+//         console.log('连接数据库成功！');
+//     }
+// });
 
 var Schema = mongoose.Schema;
 
@@ -39,7 +43,7 @@ var Todo = new Schema({
 var TodoBox = mongoose.model('TodoBox', Todo);
 
 // var TodoBox = new TodoBox({
-//     content: '上午面试',
+//     content: '面试',
 //     date: '2019-08-28'
 // });
 
@@ -48,7 +52,7 @@ const app:express.Application=express();
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*" );//若需要加入withCredentials,则需要将*改为具体域名
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
 
@@ -59,7 +63,7 @@ app.get('/',function(req,res){
 
 // 获取全部的todo
 app.get('/getAllItems', (req, res, next) => {
-	TodoBox.find({}).sort({'date': -1}).exec((err, todoList) => {
+	TodoBox.find({}).sort({'date': -1}).exec((err: any, todoList: any) => {
 		if (err) {
 			console.log(err);
 		}else {
@@ -69,13 +73,13 @@ app.get('/getAllItems', (req, res, next) => {
 });
 
 // 添加todo
-app.post('/addItem', (req, res, next) => {
+app.post('/addItem',urlencodedParser,function(req,res){
 	let newItem = req.body;
-	TodoBox.create(newItem, (err) => {
+	TodoBox.create(newItem, (err: any) => {
 		if (err) {
 			console.log(err);
 		}else {
-			TodoBox.find({}, (err, todoList) => {
+			TodoBox.find({}, (err: any, todoList: any) => {
 				if (err) {
 					console.log(err);
 				}else {
@@ -87,10 +91,12 @@ app.post('/addItem', (req, res, next) => {
 })
 
 // 删除todo
-app.post('/deleteItem', (req, res, next) => {
-	console.log(req.body);
+app.post('/deleteItem',urlencodedParser,function(req,res) {
+    console.log(req.body);
+    console.log(req.body._id);
+    console.log(11111111111111111111111111);
 	let delete_id = req.body._id
-	TodoBox.remove({_id: delete_id}, (err, result) => {
+	TodoBox.remove({_id: delete_id}, (err: any, result: any) => {
 		if (err) {
 			console.log(err)
 		}else {
@@ -98,6 +104,31 @@ app.post('/deleteItem', (req, res, next) => {
 		}
 	});
 });
+// 更新todo
+app.post('/updateItem',urlencodedParser,function(req,res) {
+    console.log(req.body);
+    console.log(req.body._id);
+    console.log(11111111111111111111111111);
+    let update_id = req.body._id;
+    // 生成参数
+    const newContent={
+        content: req.body.content
+    };
+	TodoBox.findByIdAndUpdate(update_id,newContent, function (err: any,result: any) {
+        if (err) {
+			console.log(err)
+		}else {
+			TodoBox.find({}, (err: any, todoList: any) => {
+				if (err) {
+					console.log(err);
+				}else {
+					res.json(todoList);
+				}
+			});
+		}
+    })
+});
+
 
 app.listen(8888,function(){
     console.log('Example app listening on port 8888!');
