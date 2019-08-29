@@ -5,11 +5,11 @@ var jsonParser = bodyParser.json();
 // 解析application/x-www-form-urlencoded数据
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 //引入mogoose模块
-const mongoose = require('mongoose');
+import mongoose = require('mongoose');
 //连接mongodb
 var URL = 'mongodb://localhost:27017/runoob';
 
-mongoose.connect(URL,function(err: string){
+mongoose.connect(URL,{ useNewUrlParser: true },function(err){
     if(err){
         console.warn('数据库连接失败：'+err);
     }else {
@@ -96,11 +96,11 @@ app.post('/deleteItem',urlencodedParser,function(req,res) {
     console.log(req.body._id);
     console.log(11111111111111111111111111);
 	let delete_id = req.body._id
-	TodoBox.remove({_id: delete_id}, (err: any, result: any) => {
+	TodoBox.remove({_id: delete_id}, (err: any) => {
 		if (err) {
 			console.log(err)
 		}else {
-			res.json(result);
+			res.json("success");
 		}
 	});
 });
