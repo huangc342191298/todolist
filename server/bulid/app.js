@@ -46,28 +46,29 @@ var TodoBox = mongoose.model('TodoBox', Todo);
 // });
 // TodoBox.save();
 var app = express();
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); //若需要加入withCredentials,则需要将*改为具体域名
+// app.use(function(req, res, next) {
+app.use(function (err, request, response, next) {
+    response.header("Access-Control-Allow-Origin", "*"); //若需要加入withCredentials,则需要将*改为具体域名
     // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.get('/', function (req, res) {
-    res.send('Hello World!');
+app.get('/', function (request, response) {
+    response.send('Hello World!');
 });
 // 获取全部的todo
-app.get('/getAllItems', function (req, res, next) {
+app.get('/getAllItems', function (request, response, next) {
     TodoBox.find({}).sort({ 'date': -1 }).exec(function (err, todoList) {
         if (err) {
             console.log(err);
         }
         else {
-            res.json(todoList);
+            response.json(todoList);
         }
     });
 });
 // 添加todo
-app.post('/addItem', urlencodedParser, function (req, res) {
-    var newItem = req.body;
+app.post('/addItem', urlencodedParser, function (request, response) {
+    var newItem = request.body;
     TodoBox.create(newItem, function (err) {
         if (err) {
             console.log(err);
@@ -78,36 +79,36 @@ app.post('/addItem', urlencodedParser, function (req, res) {
                     console.log(err);
                 }
                 else {
-                    res.json(todoList);
+                    response.json(todoList);
                 }
             });
         }
     });
 });
 // 删除todo
-app.post('/deleteItem', urlencodedParser, function (req, res) {
-    console.log(req.body);
-    console.log(req.body._id);
+app.post('/deleteItem', urlencodedParser, function (request, response) {
+    console.log(request.body);
+    console.log(request.body._id);
     console.log(11111111111111111111111111);
-    var delete_id = req.body._id;
+    var delete_id = request.body._id;
     TodoBox.remove({ _id: delete_id }, function (err) {
         if (err) {
             console.log(err);
         }
         else {
-            res.json("success");
+            response.json("success");
         }
     });
 });
 // 更新todo
-app.post('/updateItem', urlencodedParser, function (req, res) {
-    console.log(req.body);
-    console.log(req.body._id);
+app.post('/updateItem', urlencodedParser, urlencodedParser, function (request, response) {
+    console.log(request.body);
+    console.log(request.body._id);
     console.log(11111111111111111111111111);
-    var update_id = req.body._id;
+    var update_id = request.body._id;
     // 生成参数
     var newContent = {
-        content: req.body.content
+        content: request.body.content
     };
     TodoBox.findByIdAndUpdate(update_id, newContent, function (err, result) {
         if (err) {
@@ -119,7 +120,7 @@ app.post('/updateItem', urlencodedParser, function (req, res) {
                     console.log(err);
                 }
                 else {
-                    res.json(todoList);
+                    response.json(todoList);
                 }
             });
         }

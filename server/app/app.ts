@@ -1,13 +1,13 @@
 import express=require('express');
 import bodyParser = require('body-parser');
 // 解析application/json数据
-var jsonParser = bodyParser.json();
+const jsonParser = bodyParser.json();
 // 解析application/x-www-form-urlencoded数据
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 //引入mogoose模块
 import mongoose = require('mongoose');
 //连接mongodb
-var URL = 'mongodb://localhost:27017/runoob';
+let URL = 'mongodb://localhost:27017/runoob';
 
 mongoose.connect(URL,{ useNewUrlParser: true },function(err){
     if(err){
@@ -27,10 +27,10 @@ mongoose.connect(URL,{ useNewUrlParser: true },function(err){
 //     }
 // });
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 //Todo Schema
-var Todo = new Schema({
+const Todo = new Schema({
 	content: {
 		type: String, 
 		required: true
@@ -40,7 +40,7 @@ var Todo = new Schema({
 		required: true
 	}
 });
-var TodoBox = mongoose.model('TodoBox', Todo);
+const TodoBox = mongoose.model('TodoBox', Todo);
 
 // var TodoBox = new TodoBox({
 //     content: '面试',
@@ -50,31 +50,33 @@ var TodoBox = mongoose.model('TodoBox', Todo);
 // TodoBox.save();
 const app:express.Application=express();
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*" );//若需要加入withCredentials,则需要将*改为具体域名
-    // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+// app.use(function(req, res, next) {
+app.use((request: express.Request, response: express.Response, next: express.NextFunction): void => {
+
+	response.header("Access-Control-Allow-Origin", "*" );//若需要加入withCredentials,则需要将*改为具体域名
+	response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
 
-app.get('/',function(req,res){
-    res.send('Hello World!');
+app.get('/',(request: express.Request, response: express.Response) => {
+	response.send('Hello World!');
 });
 
 
 // 获取全部的todo
-app.get('/getAllItems', (req, res, next) => {
+app.get('/getAllItems', (request: express.Request, response: express.Response,next: express.NextFunction) => {
 	TodoBox.find({}).sort({'date': -1}).exec((err: any, todoList: any) => {
 		if (err) {
 			console.log(err);
 		}else {
-			res.json(todoList);
+			response.json(todoList);
 		}
 	})
 });
 
 // 添加todo
-app.post('/addItem',urlencodedParser,function(req,res){
-	let newItem = req.body;
+app.post('/addItem',urlencodedParser,(request: express.Request, response: express.Response) =>{
+	let newItem = request.body;
 	TodoBox.create(newItem, (err: any) => {
 		if (err) {
 			console.log(err);
@@ -83,7 +85,7 @@ app.post('/addItem',urlencodedParser,function(req,res){
 				if (err) {
 					console.log(err);
 				}else {
-					res.json(todoList);
+					response.json(todoList);
 				}
 			});
 		}
@@ -91,30 +93,30 @@ app.post('/addItem',urlencodedParser,function(req,res){
 })
 
 // 删除todo
-app.post('/deleteItem',urlencodedParser,function(req,res) {
-    console.log(req.body);
-    console.log(req.body._id);
+app.post('/deleteItem',urlencodedParser,(request: express.Request, response: express.Response) => {
+    console.log(request.body);
+    console.log(request.body._id);
     console.log(11111111111111111111111111);
-	let delete_id = req.body._id
-	TodoBox.remove({_id: delete_id}, (err: any) => {
+	let delete_id = request.body._id
+	TodoBox.deleteOne({_id: delete_id}, (err: any) => {
 		if (err) {
 			console.log(err)
 		}else {
-			res.json("success");
+			response.json("success");
 		}
 	});
 });
 // 更新todo
-app.post('/updateItem',urlencodedParser,function(req,res) {
-    console.log(req.body);
-    console.log(req.body._id);
+app.post('/updateItem',urlencodedParser,(request: express.Request, response: express.Response) => {
+    console.log(request.body);
+    console.log(request.body._id);
     console.log(11111111111111111111111111);
-    let update_id = req.body._id;
+    let update_id = request.body._id;
     // 生成参数
     const newContent={
-        content: req.body.content
+        content: request.body.content
     };
-	TodoBox.findByIdAndUpdate(update_id,newContent, function (err: any,result: any) {
+	TodoBox.findByIdAndUpdate(update_id,newContent,  (err: any,result: any)=> {
         if (err) {
 			console.log(err)
 		}else {
@@ -122,7 +124,7 @@ app.post('/updateItem',urlencodedParser,function(req,res) {
 				if (err) {
 					console.log(err);
 				}else {
-					res.json(todoList);
+					response.json(todoList);
 				}
 			});
 		}
@@ -130,6 +132,6 @@ app.post('/updateItem',urlencodedParser,function(req,res) {
 });
 
 
-app.listen(8888,function(){
+app.listen(8888,()=>{
     console.log('Example app listening on port 8888!');
 })
