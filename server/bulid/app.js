@@ -47,9 +47,9 @@ var TodoBox = mongoose.model('TodoBox', Todo);
 // TodoBox.save();
 var app = express();
 // app.use(function(req, res, next) {
-app.use(function (err, request, response, next) {
+app.use(function (request, response, next) {
     response.header("Access-Control-Allow-Origin", "*"); //若需要加入withCredentials,则需要将*改为具体域名
-    // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 app.get('/', function (request, response) {
@@ -91,7 +91,7 @@ app.post('/deleteItem', urlencodedParser, function (request, response) {
     console.log(request.body._id);
     console.log(11111111111111111111111111);
     var delete_id = request.body._id;
-    TodoBox.remove({ _id: delete_id }, function (err) {
+    TodoBox.deleteOne({ _id: delete_id }, function (err) {
         if (err) {
             console.log(err);
         }
@@ -101,7 +101,7 @@ app.post('/deleteItem', urlencodedParser, function (request, response) {
     });
 });
 // 更新todo
-app.post('/updateItem', urlencodedParser, urlencodedParser, function (request, response) {
+app.post('/updateItem', urlencodedParser, function (request, response) {
     console.log(request.body);
     console.log(request.body._id);
     console.log(11111111111111111111111111);
