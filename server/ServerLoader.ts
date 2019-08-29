@@ -12,10 +12,6 @@ class ServerLoader {
     this.app = express()
   }
 
-
-
-
-
   config() {
     console.log('config...');
     this.errorHandle()
@@ -27,6 +23,11 @@ class ServerLoader {
     console.log('initMiddleware...');
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({extended: false}));
+    this.app.use((request: express.Request, response: express.Response, next: express.NextFunction): void => {
+      response.header("Access-Control-Allow-Origin", "*" );//若需要加入withCredentials,则需要将*改为具体域名
+      response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+      next();
+    });
 
   }
 
@@ -45,17 +46,9 @@ class ServerLoader {
    */
   registerRouters() {
 
-    this.app.use((request: express.Request, response: express.Response, next: express.NextFunction): void => {
-
-          response.header("Access-Control-Allow-Origin", "*" );//若需要加入withCredentials,则需要将*改为具体域名
-          response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-          next();
-        });
-
     this.app.get('/',(request: express.Request, response: express.Response) => {
           response.send('Hello World!');
       });
-
 
       // 获取全部的todo
     this.app.get('/getAllItems', (request: express.Request, response: express.Response,next: express.NextFunction) => {
