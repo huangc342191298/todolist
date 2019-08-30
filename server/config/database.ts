@@ -12,7 +12,7 @@ import config from './config';
   });
   const db = mongoose.connection;//获取connection实例
   // //使用Connetion监听连接状态
-  db.on('connected',function(err){
+  db.on('connected',(err:any)=>{
       if(err){
           console.log('连接数据库失败：'+err);
       }else{
